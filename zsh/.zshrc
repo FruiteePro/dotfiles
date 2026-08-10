@@ -67,13 +67,19 @@ unset key
 # ===============================
 # 延迟加载模块（提速关键）
 # ===============================
+# 只在第一个提示符前跑一次，跑完自己摸掉 hook。
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _defer_plugins
 _defer_plugins() {
-  # autojump
-  [[ -f /opt/homebrew/etc/profile.d/autojump.sh ]] && source /opt/homebrew/etc/profile.d/autojump.sh
-  # fzf（建议安装后生成 ~/.fzf.zsh）
+  add-zsh-hook -d precmd _defer_plugins
+
+  # zoxide：目录跳转，z 跳转 / zi 用 fzf 选
+  (( $+commands[zoxide] )) && eval "$(zoxide init zsh)"
+
+  # fzf：集成与自定义命令，详见 ~/.zsh/fzf/README.md
   [[ -f ~/.zsh/fzf.zsh ]] && source ~/.zsh/fzf.zsh
+
+  unfunction _defer_plugins
 }
 
 # ===============================

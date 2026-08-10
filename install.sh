@@ -82,11 +82,12 @@ fi
 # =====================================================
 # 依赖安装
 # fzf：.zshrc 的 fzf 集成和 .zimrc 的 fzf-tab 都需要本体
+# zoxide：目录跳转（z / zi）
 # ripgrep：fif 按内容检索
 # bat / eza：fzf 预览窗的文件与目录渲染
 # 目录遍历用 fzf 0.47+ 内建 walker，不再需要 fd / tree
 # =====================================================
-BREW_DEPS=(fzf ripgrep bat eza)
+BREW_DEPS=(fzf zoxide ripgrep bat eza)
 
 # brew formula 名与实际命令名不一致的做个映射
 dep_command() {

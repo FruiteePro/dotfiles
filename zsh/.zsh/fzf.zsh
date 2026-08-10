@@ -76,6 +76,12 @@ export FZF_COMPLETION_PATH_OPTS="--walker=file,dir,follow,hidden
 export FZF_COMPLETION_DIR_OPTS="--walker=dir,follow,hidden
   --preview '$FZF_PREVIEW_DIR_CMD {}'"
 
+# zoxide 的 zi 也走 fzf，给它配上目录预览
+# （zoxide 输出形如 "3.5  /path/to/dir"，所以取 {2..}）
+export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS
+  --no-sort --keep-right --exit-0 --select-1
+  --preview '$FZF_PREVIEW_DIR_CMD {2..}'"
+
 # -----------------------------------------------------
 # 自定义命令（autoload，清单见 util）
 # 只抓可执行文件，避开 README.md 这类文档
