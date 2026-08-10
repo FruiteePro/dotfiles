@@ -4,14 +4,22 @@
 # 已存在的普通文件会先备份成 <目标>.bak.<时间戳>，不会直接覆盖。
 #
 # 用法:
-#   ./install.sh          实际建链
-#   ./install.sh --dry    只打印将要做什么
+#   ./install.sh            实际建链并按需安装依赖
+#   ./install.sh --dry      只打印将要做什么
+#   ./install.sh --no-deps  只建链，跳过依赖安装
 
 set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DRY_RUN=0
-[[ "${1:-}" == "--dry" ]] && DRY_RUN=1
+SKIP_DEPS=0
+for arg in "$@"; do
+  case "$arg" in
+    --dry)     DRY_RUN=1 ;;
+    --no-deps) SKIP_DEPS=1 ;;
+    *) echo "未知参数: $arg" >&2; exit 1 ;;
+  esac
+done
 
 link() {
   local src="$DOTFILES/$1"
@@ -53,6 +61,8 @@ link() {
 link zsh/.zshrc             .zshrc
 link zsh/.zimrc             .zimrc
 link zsh/.zsh/proxy.zsh     .zsh/proxy.zsh
+link zsh/.zsh/fzf.zsh       .zsh/fzf.zsh
+link zsh/.zsh/fzf           .zsh/fzf
 link config/ghostty/config  .config/ghostty/config
 link pi/settings.json       .pi/agent/settings.json
 
@@ -67,6 +77,53 @@ if [[ ! -e "$SECRETS" ]]; then
     chmod 600 "$SECRETS"
     echo "已创建 .zsh/secrets.zsh，请填入真实值"
   fi
+fi
+
+# =====================================================
+# 依赖安装
+# .zshrc 的 fzf 集成和 .zimrc 的 fzf-tab 都需要 fzf 本体，
+# ~/.zsh/fzf/ 下的 widget 还会用到 fd / rg / tree。
+# =====================================================
+BREW_DEPS=(fzf fd ripgrep tree)
+
+# brew formula 名与实际命令名不一致的做个映射
+dep_command() {
+  case "$1" in
+    ripgrep) echo rg ;;
+    *)       echo "$1" ;;
+  esac
+}
+
+install_deps() {
+  local missing=() formula
+  for formula in "${BREW_DEPS[@]}"; do
+    command -v "$(dep_command "$formula")" >/dev/null 2>&1 || missing+=("$formula")
+  done
+
+  if (( ${#missing[@]} == 0 )); then
+    echo "依赖齐全: ${BREW_DEPS[*]}"
+    return
+  fi
+
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "缺少依赖但未找到 brew，请手动安装: ${missing[*]}"
+    return
+  fi
+
+  if (( DRY_RUN )); then
+    echo "将执行 brew install ${missing[*]}"
+    return
+  fi
+
+  echo "安装缺失依赖: ${missing[*]}"
+  brew install "${missing[@]}"
+}
+
+echo
+if (( SKIP_DEPS )); then
+  echo "已跳过依赖安装 (--no-deps)"
+else
+  install_deps
 fi
 
 echo
