@@ -1,12 +1,16 @@
-### BREW + FZF
-# update multiple packages at once
-# mnemonic [B]rew [U]pdate [P]lugin
+#!/usr/bin/env zsh
+### BREW INSTALL
+# 从全部 formula 中选并安装，可多选（tab）。
+# mnemonic: [B]rew [I]nstall [P]ackage
 
-local inst=$(brew search "" | eval "fzf ${FZF_DEFAULT_OPTS} -m --header='[brew:install]'")
+setopt localoptions pipefail
 
-if [[ $inst ]]; then
-  for prog in $(echo $inst)
-  do brew install $prog
-  done
+local pkgs
+pkgs=$(brew formulae |
+  fzf -m --height=60% --header='[brew:install]' \
+      --preview 'brew info {}') || return
+
+if [[ -n $pkgs ]]; then
+  echo $pkgs | tr '\n' ' ' | read -A list
+  brew install $list
 fi
-

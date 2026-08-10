@@ -81,10 +81,12 @@ fi
 
 # =====================================================
 # 依赖安装
-# .zshrc 的 fzf 集成和 .zimrc 的 fzf-tab 都需要 fzf 本体，
-# ~/.zsh/fzf/ 下的 widget 还会用到 fd / rg / tree。
+# fzf：.zshrc 的 fzf 集成和 .zimrc 的 fzf-tab 都需要本体
+# ripgrep：fif 按内容检索
+# bat / eza：fzf 预览窗的文件与目录渲染
+# 目录遍历用 fzf 0.47+ 内建 walker，不再需要 fd / tree
 # =====================================================
-BREW_DEPS=(fzf fd ripgrep tree)
+BREW_DEPS=(fzf ripgrep bat eza)
 
 # brew formula 名与实际命令名不一致的做个映射
 dep_command() {

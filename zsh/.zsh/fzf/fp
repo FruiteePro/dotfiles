@@ -1,12 +1,16 @@
-### PATH
+#!/usr/bin/env zsh
+### PATH BROWSER
+# 浏览 $PATH 中的目录，回车看里面的可执行文件。
 # mnemonic: [F]ind [P]ath
-# list directories in $PATH, press [enter] on an entry to list the executables inside.
-# press [escape] to go back to directory listing, [escape] twice to exit completely
 
-local loc=$(echo $PATH | sed -e $'s/:/\\\n/g' | eval "fzf ${FZF_DEFAULT_OPTS} --header='[find:path]'")
+setopt localoptions pipefail
 
-if [[ -d $loc ]]; then
-  echo "$(rg --files $loc | rev | cut -d"/" -f1 | rev)" | eval "fzf ${FZF_DEFAULT_OPTS} --header='[find:exe] => ${loc}' >/dev/null"
-  fp
+local dir
+dir=$(print -l ${(s.:.)PATH} | awk '!seen[$0]++' |
+  fzf --height=50% --header='[find:path]' \
+      --preview 'ls -1 {} 2>/dev/null | head -100') || return
+
+if [[ -d $dir ]]; then
+  print -l $dir/*(N.x:t) |
+    fzf --height=50% --header="[find:exe] => $dir" >/dev/null
 fi
-

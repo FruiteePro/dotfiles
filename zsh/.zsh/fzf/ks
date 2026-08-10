@@ -1,14 +1,16 @@
-### SERVER
+#!/usr/bin/env zsh
+### KILL BY PORT
+# 选监听中的 TCP 端口并 kill 对应进程，可多选（tab）。默认 -9
 # mnemonic: [K]ill [S]erver
-# show output of "lsof -Pwni tcp", use [tab] to select one or multiple entries
-# press [enter] to kill selected processes and go back to the process list.
-# or press [escape] to go back to the process list. Press [escape] twice to exit completely.
 
-local pid=$(lsof -Pwni tcp | sed 1d | eval "fzf ${FZF_DEFAULT_OPTS} -m --header='[kill:tcp]'" | awk '{print $2}')
+setopt localoptions pipefail
 
-if [ "x$pid" != "x" ]
-then
-  echo $pid | xargs kill -${1:-9}
-  ks
+local pids
+pids=$(lsof -Pwni tcp |
+  fzf --header-lines=1 -m --height=50% --header='[kill:tcp]' |
+  awk '{print $2}' | sort -u)
+
+if [[ -n $pids ]]; then
+  echo $pids | xargs kill -${1:-9}
+  echo "已 kill: $(echo $pids | tr '\n' ' ')"
 fi
-

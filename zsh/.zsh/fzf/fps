@@ -1,28 +1,19 @@
 #!/usr/bin/env zsh
-
-_fps() {
-    local render
-    if (( $+commands[grcat] )); then
-        render='grcat fps.grc'
-    else
-        render='cat'
-    fi
-
-    ps -eo user,pid,ppid,pgid,stat,tname,cmd | awk '
-    BEGIN { "ps -p $$ -o pgid --no-headers | tr -d \"[:blank:]\"" | getline pgid } {
-        if ($4 != pgid || $2 == pgid)
-            print
-    }' | ${(z)render}
-}
+### PROCESS SELECT
+# 选进程，输出 PID。可多选（tab）。
+# mnemonic: [F]ind [P]rocess
+# 供其他命令复用，例如: kill -9 $(fps)
 
 setopt localoptions pipefail
 
-local fzf_opts="--header-lines=1 -m \
-${commands[grcat]:+--ansi} --height=50% \
---min-height=15 --tac --reverse \
---preview-window=down:2"
+local fzf_opts="--header-lines=1 -m --height=50% --min-height=15
+  --preview-window=down:4:wrap"
 
-local fzf_preview_cmd="ps -o pcpu,pmem,vsz,rss,thcount,start_time,time -p {2}"
+# BSD ps: 不支持 --no-headers，用 -c 显示命令名而非完整路径会丢参数，故用 command=
+local fzf_preview_cmd='ps -o pid,ppid,pcpu,pmem,vsz,rss,lstart,time -p {2} 2>/dev/null'
 
-_fps | fzf ${(z)fzf_opts} --preview=$fzf_preview_cmd |
-    awk -v sep=${FZF_MUL_DELIM:- } '{ printf "%s%c", $2, sep }' | sed -E "s/${FZF_MUL_DELIM:- }$//"
+ps -axo user,pid,ppid,pgid,stat,tty,command |
+  awk -v self=$$ 'NR==1 || ($2 != self)' |
+  fzf ${(z)fzf_opts} --preview=$fzf_preview_cmd |
+  awk -v sep=${FZF_MUL_DELIM:- } '{ printf "%s%c", $2, sep }' |
+  sed -E "s/${FZF_MUL_DELIM:- }$//"
