@@ -11,7 +11,7 @@ cd ~/dotfiles
 ./install.sh
 ```
 
-`install.sh` 建完链会检测并用 brew 装缺少的依赖（fzf / ripgrep / bat / eza）。
+`install.sh` 建完链会检测并用 brew 装缺少的依赖（fzf / zoxide / ripgrep / bat / eza）。
 不想动安装就加 `--no-deps`，只建链。
 
 已存在的普通文件会备份成 `<目标>.bak.<时间戳>`，不会被直接覆盖。
@@ -56,6 +56,18 @@ cd ~/dotfiles
 | `fif` | 按内容检索文件并打开 |
 | `util` | 上面这张表 |
 
+## 目录跳转
+
+用 zoxide，`.zshrc` 里延迟初始化：
+
+```zsh
+z dotfiles      # 跳到权重最高的匹配项
+zi dot          # 候选多时用 fzf 选，带预览
+```
+
+从 autojump 迁过来的，旧数据用 `zoxide import autojump` 导入。
+新机器上数据库从零累积，正常 `cd` 一段时间就能用。
+
 ## 密钥
 
 所有 token 放 `~/.zsh/secrets.zsh`，该文件不进仓库。仓库里只有
@@ -70,6 +82,7 @@ cd ~/dotfiles
 ## 依赖
 
 - [Zim](https://zimfw.sh/) — `.zshrc` 里会自动下载 zimfw.zsh
-- fzf / ripgrep / bat / eza — `install.sh` 自动检测并用 brew 安装
+- fzf / zoxide / ripgrep / bat / eza — `install.sh` 自动检测并用 brew 安装
+- 需自行安装（有别名指向它们，但不纳入自动安装）：kubectl、podman、lazygit
 - [Ghostty](https://ghostty.org/)
 - [pi](https://pi.dev/) — `settings.json` 里引用的 npm 包会自动安装

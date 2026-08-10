@@ -81,6 +81,17 @@ ks 15
 
 `fps` 支持多选，多个 PID 之间用空格分隔，所以 `$(fps)` 可以直接展开成多个参数。
 
+## 目录跳转
+
+`z` / `zi` 来自 zoxide，不在本目录，在 `.zshrc` 里初始化。
+`zi` 走 fzf，预览配置通过 `_ZO_FZF_OPTS` 在 `fzf.zsh` 里给它：
+
+```zsh
+z dotfiles      # 直接跳到权重最高的匹配项
+zi dot          # 候选多时用 fzf 选，带目录预览
+zi              # 不给参数，列出全部去过的目录
+```
+
 ## 目录遍历
 
 fzf 0.47+ 有内建 walker，不依赖 `fd` 或 `find`。`fzf.zsh` 里通过
