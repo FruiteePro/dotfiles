@@ -78,11 +78,12 @@ export FZF_COMPLETION_DIR_OPTS="--walker=dir,follow,hidden
 
 # -----------------------------------------------------
 # 自定义命令（autoload，清单见 util）
+# 只抓可执行文件，避开 README.md 这类文档
 # -----------------------------------------------------
 _fzf_fpath=${0:A:h}/fzf
 if [[ -d $_fzf_fpath ]]; then
   fpath+=$_fzf_fpath
-  autoload -Uz $_fzf_fpath/*(.:t)
+  autoload -Uz $_fzf_fpath/*(.x:t)
 fi
 unset _fzf_fpath
 
