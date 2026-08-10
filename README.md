@@ -11,7 +11,7 @@ cd ~/dotfiles
 ./install.sh
 ```
 
-`install.sh` 建完链会检测并用 brew 装缺少的依赖（fzf / fd / ripgrep / tree）。
+`install.sh` 建完链会检测并用 brew 装缺少的依赖（fzf / ripgrep / bat / eza）。
 不想动安装就加 `--no-deps`，只建链。
 
 已存在的普通文件会备份成 `<目标>.bak.<时间戳>`，不会被直接覆盖。
@@ -25,24 +25,36 @@ cd ~/dotfiles
 | `zsh/.zshrc` | `~/.zshrc` | zsh 主配置，密钥已外置 |
 | `zsh/.zimrc` | `~/.zimrc` | Zim 模块清单 |
 | `zsh/.zsh/proxy.zsh` | `~/.zsh/proxy.zsh` | 代理开关函数 |
-| `zsh/.zsh/fzf.zsh` | `~/.zsh/fzf.zsh` | fzf 选项与按键绑定 |
-| `zsh/.zsh/fzf/` | `~/.zsh/fzf/` | fzf widget 与小工具（autoload） |
+| `zsh/.zsh/fzf.zsh` | `~/.zsh/fzf.zsh` | fzf 集成与预览配置 |
+| `zsh/.zsh/fzf/` | `~/.zsh/fzf/` | 自定义 fzf 命令（autoload） |
 | `config/ghostty/config` | `~/.config/ghostty/config` | Ghostty 终端 |
 | `pi/settings.json` | `~/.pi/agent/settings.json` | pi coding agent |
 
 ## fzf
 
-`~/.zsh/fzf.zsh` 延迟加载（由 `.zshrc` 的 `precmd` hook 触发），绑定：
+`~/.zsh/fzf.zsh` 延迟加载（由 `.zshrc` 的 `precmd` hook 触发），
+通过 `source <(fzf --zsh)` 用官方集成，键位保持上游默认：
 
 | 按键 | 功能 |
 |---|---|
-| `^P` | 文件/目录查找并插入命令行 |
-| `^T` | 选目录并 cd |
-| `^R` | 历史命令搜索 |
-| `^F` | 当前目录内容全文搜索 |
+| `^T` | 选文件/目录，插入命令行 |
+| `Alt-C` | 选目录并 cd |
+| `^R` | 历史命令搜索，`?` 展开预览看长命令 |
+| `Tab` | 补全，由 fzf-tab 接管 |
 
-`~/.zsh/fzf/` 里的脚本以 autoload 函数形式提供：`bip`/`bup`/`bcp`（brew 装/升/卸）、
-`fp`（看 PATH）、`kp`/`ks`（按进程/端口 kill）、`fif`（内容检索）、`util`（命令速查）。
+目录遍历用 fzf 0.47+ 的内建 walker，不依赖 `fd`。预览用 `bat` 看文件、
+`eza --tree` 看目录，两者缺失时自动退回 `cat` / `ls`。
+
+`~/.zsh/fzf/` 里的脚本以 autoload 函数提供，输 `util` 看完整清单：
+
+| 命令 | 功能 |
+|---|---|
+| `bip` / `bup` / `bcp` | brew 选包安装 / 升级 / 卸载 |
+| `fp` | 浏览 `$PATH` 及其中的可执行文件 |
+| `fps` | 选进程输出 PID，供其他命令复用 |
+| `kp` / `ks` | 按进程 / 按 TCP 端口 kill |
+| `fif` | 按内容检索文件并打开 |
+| `util` | 上面这张表 |
 
 ## 密钥
 
@@ -58,6 +70,6 @@ cd ~/dotfiles
 ## 依赖
 
 - [Zim](https://zimfw.sh/) — `.zshrc` 里会自动下载 zimfw.zsh
-- fzf / fd / ripgrep / tree — `install.sh` 自动检测并用 brew 安装
+- fzf / ripgrep / bat / eza — `install.sh` 自动检测并用 brew 安装
 - [Ghostty](https://ghostty.org/)
 - [pi](https://pi.dev/) — `settings.json` 里引用的 npm 包会自动安装

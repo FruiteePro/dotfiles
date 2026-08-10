@@ -1,43 +1,29 @@
+#!/usr/bin/env zsh
 ### UTILS
-# show utils commands and custom aliasses
+# 速查本机自定义命令与别名，回车执行选中项。
 
-local helptxt="bcp    [brew:clean]
-bip    [brew:install]
-bup    [brew:update]
-cani   [caniuse:features]
-fp     [find:path]
-kp     [kill:path]
-ks     [kill:tcp]
-av     [alias]              source venv/bin/activate
-c      [alias]              clear
-cdiff  [alias]              colordiff
-cs     [alias]              calcurse
-dv     [alias]              deactivate
-gc     [alias]              git config credential.helper store
-ipy    [alias]              ipython
-l      [alias]              ls -la
-lg     [alias]              lazygit
-ms     [alias]              mailsync
-mt     [alias]              neomutt
-r      [alias]              echo \$RANGER_LEVEL
-pu     [alias]              python3 -m pudb
-ra     [alias]              ranger
-s      [alias]              neofetch
-g      [alias]              onefetch
-sra    [alias]              sudo -E ranger
-sudo   [alias]              sudo -E
-vim    [alias]              nvim
-gs     [alias]              git config credential.helper store
-bat    [alias]              sudo tlp bat
-ac     [alias]              sudo tlp ac
-gy     [alias]              git-yolo
-nb     [alias]              newsboat -r
-nt     [alias]              sh -c 'cd $(pwd); st' > /dev/null 2>&1 &
-lo     [alias]              lsof -p \$(fps) +w"
+setopt localoptions pipefail
 
-local cmd=$(echo $helptxt | eval "fzf ${FZF_DEFAULT_OPTS} --header='[utils:show]'" | awk '{print $1}')
+local helptxt="bip     [fzf:brew]     选包安装
+bup     [fzf:brew]     选包升级
+bcp     [fzf:brew]     选包卸载
+fp      [fzf:path]     浏览 \$PATH 及其可执行文件
+fps     [fzf:proc]     选进程输出 PID
+kp      [fzf:proc]     选进程并 kill
+ks      [fzf:port]     选 TCP 端口并 kill
+fif     [fzf:grep]     按内容检索文件并打开
+util    [fzf:help]     本清单
+proxy   [net]          代理开关: proxy on|off|status
+k       [alias]        kubectl
+lg      [alias]        lazygit
+tdk     [alias]        kubectl trip-dev
+ttk     [alias]        kubectl trip-testing
+tpk     [alias]        kubectl trip-prod"
+
+local cmd
+cmd=$(echo $helptxt |
+  fzf --height=60% --header='[utils:show]' | awk '{print $1}') || return
 
 if [[ -n $cmd ]]; then
-  eval ${cmd}
+  print -z $cmd
 fi
-

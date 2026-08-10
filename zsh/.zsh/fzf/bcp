@@ -1,11 +1,22 @@
-### BREW + FZF
-# mnemonic [B]rew [I]nstall [P]lugin
+#!/usr/bin/env zsh
+### BREW CLEAN
+# 从手动安装的包（brew leaves）中选并卸载，可多选（tab）。
+# 卸载前会列出待删清单确认。
+# mnemonic: [B]rew [C]lean [P]ackage
 
-local uninst=$(brew leaves | eval "fzf ${FZF_DEFAULT_OPTS} -m --header='[brew:clean]'")
+setopt localoptions pipefail
 
-if [[ $uninst ]]; then
-  for prog in $(echo $uninst)
-  do brew uninstall $prog
-  done
-fi
+local pkgs
+pkgs=$(brew leaves |
+  fzf -m --height=60% --header='[brew:uninstall]' \
+      --preview 'brew info {}') || return
 
+[[ -z $pkgs ]] && return 0
+
+echo "将卸载:"
+echo $pkgs | sed 's/^/  /'
+read -q "?继续? [y/N] " || { echo; return 1 }
+echo
+
+echo $pkgs | tr '\n' ' ' | read -A list
+brew uninstall $list
