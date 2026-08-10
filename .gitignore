@@ -1,0 +1,12 @@
+# 密钥本体，只提交 .example
+zsh/.zsh/secrets.zsh
+
+# 系统 / 编辑器
+.DS_Store
+*.swp
+*.swo
+
+# 各类工具生成的备份
+*.bak
+*.bak.*
+*.git-ai-bak.*

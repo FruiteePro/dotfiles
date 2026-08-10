@@ -1,0 +1,13 @@
+{
+  "lastChangelogVersion": "0.84.1",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-5",
+  "defaultThinkingLevel": "high",
+  "theme": "dark",
+  "packages": [
+    "npm:pi-add-dir",
+    "npm:@ff-labs/pi-fff",
+    "npm:pi-prompt-view",
+    "npm:@juicesharp/rpiv-web-tools"
+  ]
+}
