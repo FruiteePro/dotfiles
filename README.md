@@ -28,7 +28,10 @@ cd ~/dotfiles
 | `zsh/.zsh/fzf.zsh` | `~/.zsh/fzf.zsh` | fzf 集成与预览配置 |
 | `zsh/.zsh/fzf/` | `~/.zsh/fzf/` | 自定义 fzf 命令（autoload） |
 | `config/ghostty/config` | `~/.config/ghostty/config` | Ghostty 终端 |
-| `pi/settings.json` | `~/.pi/agent/settings.json` | pi coding agent |
+| `pi/settings.json` | `~/.pi/agent/settings.json` | pi coding agent 主配置 |
+| `pi/settings-extensions.json` | `~/.pi/agent/settings-extensions.json` | pi 扩展配置（powerbar 等） |
+| `pi/AGENTS.md` | `~/.pi/agent/AGENTS.md` | pi 全局指令 |
+| `pi/prompts/commit.md` | `~/.pi/agent/prompts/commit.md` | pi `/commit` 提示词 |
 
 ## fzf
 
@@ -65,8 +68,33 @@ z dotfiles      # 跳到权重最高的匹配项
 zi dot          # 候选多时用 fzf 选，带预览
 ```
 
-从 autojump 迁过来的，旧数据用 `zoxide import autojump` 导入。
+从 autojump 迁过来的，旧数据这样导入：
+
+```zsh
+zoxide import autojump < ~/Library/autojump/autojump.txt
+brew uninstall autojump
+```
+
 新机器上数据库从零累积，正常 `cd` 一段时间就能用。
+
+## 代理
+
+`~/.zsh/proxy.zsh` 提供 `proxy` 函数，端口 7897：
+
+```zsh
+proxy on       # 设置 http_proxy / https_proxy / all_proxy
+proxy off      # 全部 unset
+proxy status   # 看当前状态
+```
+
+## Node
+
+Node 由 nvm 管理，`.zshrc` 里加载 `nvm.sh`，版本取 `nvm alias default`。
+不再固定 `node@20` 的 PATH。
+
+`NODE_OPTIONS=--use-system-ca` 让 Node 直接用系统钥匙串里的 CA，
+访问内网 HTTPS 不用再手动维护证书文件。这个参数需要 Node 22+，
+如果 `nvm default` 指向更老的版本，`node` 会启动失败。
 
 ## 密钥
 
@@ -84,5 +112,9 @@ zi dot          # 候选多时用 fzf 选，带预览
 - [Zim](https://zimfw.sh/) — `.zshrc` 里会自动下载 zimfw.zsh
 - fzf / zoxide / ripgrep / bat / eza — `install.sh` 自动检测并用 brew 安装
 - 需自行安装（有别名指向它们，但不纳入自动安装）：kubectl、podman、lazygit
+- [nvm](https://github.com/nvm-sh/nvm) — Node 版本管理，需 default 指向 22+
 - [Ghostty](https://ghostty.org/)
 - [pi](https://pi.dev/) — `settings.json` 里引用的 npm 包会自动安装
+
+不纳管的部分：pi 的 `models*.json`、`auth.json`、`sessions/` 等本机状态，
+以及 `~/.agents/skills` 下的 skill 本体。

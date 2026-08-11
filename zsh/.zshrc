@@ -64,6 +64,17 @@ for key ('k') bindkey -M vicmd ${key} history-substring-search-up
 for key ('j') bindkey -M vicmd ${key} history-substring-search-down
 unset key
 
+# Vi 插入模式下补充 Emacs 风格光标移动（免切 Esc）
+bindkey -M viins '^A' beginning-of-line      # Ctrl-a 行首
+bindkey -M viins '^E' end-of-line            # Ctrl-e 行尾
+bindkey -M viins '^F' forward-char           # Ctrl-f 右移一字符
+bindkey -M viins '^B' backward-char          # Ctrl-b 左移一字符
+bindkey -M viins '^[f' forward-word          # Alt-f  右移一词
+bindkey -M viins '^[b' backward-word         # Alt-b  左移一词
+bindkey -M viins '^K' kill-line              # Ctrl-k 删到行尾
+bindkey -M viins '^U' backward-kill-line     # Ctrl-u 删到行首
+bindkey -M viins '^W' backward-kill-word     # Ctrl-w 删除前一个词
+
 # ===============================
 # 延迟加载模块（提速关键）
 # ===============================
@@ -85,7 +96,24 @@ _defer_plugins() {
 # ===============================
 # 环境变量与代理
 # ===============================
-export PATH="$HOME/.npm-global/bin:/opt/homebrew/opt/ruby/bin:$HOME/.local/bin:$PATH"
+export PATH="/opt/homebrew/opt/ruby/bin:$HOME/.local/bin:$PATH"
+
+# Node 走 nvm 管理的版本（default alias），不再固定 node@20
+export NVM_DIR="$HOME/.nvm"
+[[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+[[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
+
+# 用系统钥匙串里的 CA，省去手动维护证书文件（需 Node 22+）
+export NODE_OPTIONS=--use-system-ca
+
+# Node V8 编译缓存，加快 node CLI 启动（pi 等）
+export NODE_COMPILE_CACHE="$HOME/.cache/node-compile-cache"
+
+# jfrog cli 插件源
+export JFROG_CLI_PLUGINS_SERVER=artifactory
+export JFROG_CLI_PLUGINS_REPO=jfrog-cli-plugins
+
+export HEXDUMP_PATH=$(command -v hexdump)
 
 # 密钥与 token 统一放在 ~/.zsh/secrets.zsh（不进仓库）
 # 新机器：cp ~/.zsh/secrets.zsh.example ~/.zsh/secrets.zsh 后填值
@@ -136,18 +164,3 @@ export PATH="$HOME/.ada-cli/bin:$PATH"
 # Kiro CLI post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
 
-
-
-
-
-
-export SSL_CERT_FILE="$HOME/.ctrip-certs.pem"
-
-# --- Node TLS: trust Ctrip internal CA (for pi / opencode / npm to reach *.ctripcorp.com) ---
-export NODE_EXTRA_CA_CERTS="$HOME/.ctrip-certs.pem"
-
-# Added by git-ai install.sh on Fri Jul 31 12:37:53 CST 2026
-export PATH="/Users/junpeng/.git-ai/bin:$PATH"
-
-# Node V8 compile cache: speeds up node CLI startup (pi, etc.) ~10-20%
-export NODE_COMPILE_CACHE="$HOME/.cache/node-compile-cache"

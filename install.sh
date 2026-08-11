@@ -64,7 +64,10 @@ link zsh/.zsh/proxy.zsh     .zsh/proxy.zsh
 link zsh/.zsh/fzf.zsh       .zsh/fzf.zsh
 link zsh/.zsh/fzf           .zsh/fzf
 link config/ghostty/config  .config/ghostty/config
-link pi/settings.json       .pi/agent/settings.json
+link pi/settings.json            .pi/agent/settings.json
+link pi/settings-extensions.json .pi/agent/settings-extensions.json
+link pi/AGENTS.md                .pi/agent/AGENTS.md
+link pi/prompts/commit.md        .pi/agent/prompts/commit.md
 
 # 首次安装时生成密钥文件骨架，已存在则不动
 SECRETS="$HOME/.zsh/secrets.zsh"
@@ -131,3 +134,11 @@ fi
 
 echo
 echo "完成。新开一个 shell 生效。"
+
+# 从 autojump 迁过来的机器，提示导入历史数据后再卸载
+if command -v autojump >/dev/null 2>&1; then
+  echo
+  echo "检测到 autojump，配置已改用 zoxide。导入历史数据后可以卸载："
+  echo "  zoxide import autojump < ~/Library/autojump/autojump.txt"
+  echo "  brew uninstall autojump"
+fi

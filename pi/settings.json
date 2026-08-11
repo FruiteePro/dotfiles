@@ -1,13 +1,25 @@
 {
-  "lastChangelogVersion": "0.84.1",
+  "$schema": "https://pi.dev/schemas/settings.json",
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5",
   "defaultThinkingLevel": "high",
   "theme": "dark",
   "packages": [
-    "npm:pi-add-dir",
+    "npm:@capyup/pi-auto-compact",
+    "npm:pi-hashline-edit-pro",
+    "npm:@narumitw/pi-subagents",
+    "npm:@narumitw/pi-btw",
     "npm:@ff-labs/pi-fff",
+    "npm:pi-workspace-history",
+    "npm:@tmustier/pi-raw-paste",
+    "npm:pi-add-dir",
+    "npm:pi-cometix-footer",
+    "npm:pi-plan",
     "npm:pi-prompt-view",
     "npm:@juicesharp/rpiv-web-tools"
-  ]
+  ],
+  "skills": [
+    "~/.codex/skills"
+  ],
+  "lastChangelogVersion": "0.84.1"
 }
