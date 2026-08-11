@@ -10,8 +10,8 @@
 function proxy() {
     # --- Your Proxy Settings ---
     local http_host="127.0.0.1"
-    local http_port="7890"
-    local socks_port="7890"
+    local http_port="7897"
+    local socks_port="7897"
     # --------------------------
 
     local http_proxy_url="http://${http_host}:${http_port}"
