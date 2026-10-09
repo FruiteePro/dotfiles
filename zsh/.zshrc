@@ -70,6 +70,8 @@ bindkey -M viins '^E' end-of-line            # Ctrl-e 行尾
 bindkey -M viins '^F' forward-char           # Ctrl-f 右移一字符
 bindkey -M viins '^B' backward-char          # Ctrl-b 左移一字符
 bindkey -M viins '^[f' forward-word          # Alt-f  右移一词
+bindkey -M viins '^[[1;3C' forward-word      # Option-→ 右移一词（逐词接受建议）
+bindkey -M viins '^[^[[C' forward-word       # Option-→ 的 Esc+ 变体
 bindkey -M viins '^[b' backward-word         # Alt-b  左移一词
 bindkey -M viins '^K' kill-line              # Ctrl-k 删到行尾
 bindkey -M viins '^U' backward-kill-line     # Ctrl-u 删到行首
@@ -100,7 +102,10 @@ export PATH="/opt/homebrew/opt/ruby/bin:$HOME/.local/bin:$PATH"
 
 # Node 走 nvm 管理的版本（default alias），不再固定 node@20
 export NVM_DIR="$HOME/.nvm"
-[[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+# .zprofile 已为登录 shell 加载过 nvm，这里跳过重复 source（约省 0.25s）
+if [[ -s "$NVM_DIR/nvm.sh" ]] && (( ! ${+functions[nvm]} )); then
+  source "$NVM_DIR/nvm.sh"
+fi
 [[ -s "$NVM_DIR/bash_completion" ]] && source "$NVM_DIR/bash_completion"
 
 # 用系统钥匙串里的 CA，省去手动维护证书文件（需 Node 22+）
@@ -160,7 +165,11 @@ export PATH="/Users/junpeng/.antigravity/antigravity/bin:$PATH"
 # Ada CLI
 export PATH="$HOME/.ada-cli/bin:$PATH"
 
+# Bun 全局包
+export PATH="$HOME/.bun/bin:$PATH"
+
+# Added by git-ai install.sh
+export PATH="$HOME/.git-ai/bin:$PATH"
 
 # Kiro CLI post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
-
