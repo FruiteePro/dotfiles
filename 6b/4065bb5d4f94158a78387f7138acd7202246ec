@@ -1,0 +1,19 @@
+pi/AGENTS.md
+  s_e9d49e63e28b5c::t_7f4efc40e9e71b 6-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.45-trip",
+  "base_commit_sha": "6b4065bb5d4f94158a78387f7138acd7202246ec",
+  "prompts": {},
+  "sessions": {
+    "s_e9d49e63e28b5c": {
+      "agent_id": {
+        "tool": "chengxiaobang",
+        "id": "s_0f8b0wfhubwm",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "junpengke <kejp@trip.com>"
+    }
+  }
+}
