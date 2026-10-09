@@ -1,8 +1,9 @@
 {
   "$schema": "https://pi.dev/schemas/settings.json",
-  "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-5",
+  "defaultProvider": "kiro-rs",
+  "defaultModel": "claude-opus-5-5",
   "defaultThinkingLevel": "high",
+  "externalEditor": "vim",
   "theme": "dark",
   "packages": [
     "npm:@capyup/pi-auto-compact",
@@ -16,10 +17,11 @@
     "npm:pi-cometix-footer",
     "npm:pi-plan",
     "npm:pi-prompt-view",
-    "npm:@juicesharp/rpiv-web-tools"
+    "npm:@juicesharp/rpiv-web-tools",
+    "npm:@cnife/pi-auto-naming-session@0.4.1"
   ],
   "skills": [
     "~/.codex/skills"
   ],
-  "lastChangelogVersion": "0.84.1"
+  "lastChangelogVersion": "1.1.0"
 }
