@@ -1,0 +1,49 @@
+zsh/.zsh/fzf/bup
+  s_52676527a68817::t_1fef5bf5db4546 1-12
+zsh/.zsh/fzf/fhistory
+  s_52676527a68817::t_1fef5bf5db4546 1-13
+zsh/.zsh/fzf/ffunctions
+  s_52676527a68817::t_1fef5bf5db4546 1-5
+zsh/.zsh/fzf/fps
+  s_52676527a68817::t_1fef5bf5db4546 1-28
+zsh/.zsh/fzf/fzf-find-widget
+  s_52676527a68817::t_1fef5bf5db4546 1-42
+zsh/.zsh/fzf/util
+  s_52676527a68817::t_1fef5bf5db4546 1-43
+README.md
+  s_52676527a68817::t_fee94cba416768 14-16,28-29,33-46,61
+zsh/.zsh/fzf.zsh
+  s_52676527a68817::t_1fef5bf5db4546 1-66
+zsh/.zsh/fzf/bcp
+  s_52676527a68817::t_1fef5bf5db4546 1-11
+zsh/.zsh/fzf/ffind
+  s_52676527a68817::t_1fef5bf5db4546 1-80
+zsh/.zsh/fzf/ks
+  s_52676527a68817::t_1fef5bf5db4546 1-14
+zsh/.zsh/fzf/bip
+  s_52676527a68817::t_1fef5bf5db4546 1-12
+install.sh
+  s_52676527a68817::t_1a7a77d0b72e40 7-9,15-22,64-65,82-126
+zsh/.zsh/fzf/kp
+  s_52676527a68817::t_1fef5bf5db4546 1-14
+zsh/.zsh/fzf/fp
+  s_52676527a68817::t_1fef5bf5db4546 1-12
+zsh/.zsh/fzf/cani
+  s_52676527a68817::t_1fef5bf5db4546 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.39-trip",
+  "base_commit_sha": "d7ed44b2e1b84db50a54730bfdb04b310f3cb8a5",
+  "prompts": {},
+  "sessions": {
+    "s_52676527a68817": {
+      "agent_id": {
+        "tool": "pi",
+        "id": "019fec7d-f96f-72b9-94e3-6e60b4a3a1dd",
+        "model": "claude-opus-5"
+      },
+      "human_author": "kejp <kejp@trip.com>"
+    }
+  }
+}
