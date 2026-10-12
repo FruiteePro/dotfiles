@@ -1,7 +1,3 @@
-
-# Kiro CLI pre block. Keep at the top of this file.
-[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh"
-
 # ===============================
 # Zsh 启动性能分析（可选）
 # ===============================
@@ -167,9 +163,3 @@ export PATH="$HOME/.ada-cli/bin:$PATH"
 
 # Bun 全局包
 export PATH="$HOME/.bun/bin:$PATH"
-
-# Added by git-ai install.sh
-export PATH="$HOME/.git-ai/bin:$PATH"
-
-# Kiro CLI post block. Keep at the bottom of this file.
-[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
