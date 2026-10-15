@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+#
+# sec: shell 密钥管理（Bitwarden Secrets Manager 云端 + 本机钥匙串缓存）
+#
+# 数据流：
+#   Bitwarden 云端 shell-secrets 项目（端到端加密，多机共享）
+#     --sec sync-->  本机钥匙串单条缓存 bws-env-cache
+#     --启动/sec run-->  环境变量
+# 日常读取只读本机钥匙串，不联网；只有 sync / set 访问云端。
+#
+# 用法：
+#   sec sync              从云端拉取全部密钥，覆盖本机缓存
+#   sec set NAME          创建或更新一个密钥（交互输入不回显；也可 pbpaste | sec set NAME）
+#   sec run -- CMD ...    把缓存里的密钥注入环境变量后执行 CMD（给 agent / 脚本用）
+#   sec list              列出缓存里的变量名（不输出值）
+#
+# 新机器：安装 bws，在网页 Secrets Manager 给这台机器建 machine account 和 access token，
+#   security add-generic-password -U -a "$USER" -s bws-access-token -w   # 粘贴 token
+#   sec sync
+
+set -euo pipefail
+
+BWS_PROJECT_ID="${BWS_PROJECT_ID:-3b1dfb6f-b5c3-4561-afc3-b4e400bcee71}"   # shell-secrets，非敏感
+CACHE_SVC="${BWS_CACHE_SVC:-bws-env-cache}"
+TOKEN_SVC="${BWS_TOKEN_SVC:-bws-access-token}"
+ACCOUNT="${USER:-$(id -un)}"
+PY=/usr/bin/python3
+
+die() { echo "sec: $*" >&2; exit 1; }
+
+# access token 只通过环境变量传给单条 bws 命令，不进 argv
+bws_cmd() {
+  command -v bws >/dev/null 2>&1 || die "未找到 bws，先运行 ~/dotfiles/install.sh"
+  local token
+  token=$(security find-generic-password -a "$ACCOUNT" -s "$TOKEN_SVC" -w 2>/dev/null) \
+    || die "钥匙串里没有 ${TOKEN_SVC}，见 sec 文件头的新机器步骤"
+  BWS_ACCESS_TOKEN="$token" bws "$@"
+}
+
+# 输出缓存明文（每行 NAME=VALUE）；缓存不存在返回 1
+read_cache() {
+  local blob
+  blob=$(security find-generic-password -a "$ACCOUNT" -s "$CACHE_SVC" -w 2>/dev/null) || return 1
+  printf '%s' "$blob" | base64 -d
+}
+
+cmd_sync() {
+  local json blob
+  json=$(bws_cmd secret list "$BWS_PROJECT_ID" --output json) || die "拉取失败，缓存未改动"
+  # 校验变量名、拒绝含换行的值，整体 base64 存成一条，避免逐条读钥匙串拖慢启动
+  blob=$("$PY" -c '
+import sys, json, re, base64
+out = []
+for s in json.loads(sys.stdin.read()):
+    k, v = s["key"], s["value"]
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", k):
+        print(f"sec: 跳过非法变量名 {k!r}", file=sys.stderr); continue
+    if "\n" in v or "\r" in v:
+        print(f"sec: 跳过 {k}（值含换行）", file=sys.stderr); continue
+    out.append(f"{k}={v}\n")
+if not out and "--allow-empty" not in sys.argv:
+    print("sec: 云端为 0 个密钥，为防误清空未写缓存（确需清空加 --allow-empty）", file=sys.stderr)
+    sys.exit(1)
+print(base64.b64encode("".join(sorted(out)).encode()).decode())
+print(f"sec: synced {len(out)} secrets", file=sys.stderr)
+' "$@" <<<"$json") || exit 1
+  security add-generic-password -U -a "$ACCOUNT" -s "$CACHE_SVC" -w "$blob"
+}
+
+cmd_set() {
+  local key="${1:-}" val json id
+  [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || die "用法: sec set VAR_NAME"
+  if [[ -t 0 ]]; then
+    read -rsp "$key 的新值: " val; echo >&2
+  else
+    val=$(cat)
+  fi
+  [[ -n "$val" ]] || die "值为空，已取消"
+  [[ "$val" != *$'\n'* ]] || die "值含换行，不支持"
+
+  json=$(bws_cmd secret list "$BWS_PROJECT_ID" --output json) || die "查询失败"
+  id=$("$PY" -c 'import sys,json; k=sys.argv[1]; print(next((s["id"] for s in json.loads(sys.stdin.read()) if s["key"]==k), ""))' "$key" <<<"$json")
+  if [[ -n "$id" ]]; then
+    bws_cmd secret edit --value "$val" --output none "$id" >/dev/null
+    echo "sec: updated $key" >&2
+  else
+    bws_cmd secret create --output none "$key" "$val" "$BWS_PROJECT_ID" >/dev/null
+    echo "sec: created $key" >&2
+  fi
+  cmd_sync
+}
+
+cmd_run() {
+  [[ "${1:-}" == "--" ]] && shift
+  (( $# )) || die "用法: sec run -- CMD [ARGS...]"
+  local line data
+  data=$(read_cache) || die "本机没有缓存，先执行 sec sync"
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then export "$line"; fi
+  done <<<"$data"
+  exec "$@"
+}
+
+cmd_list() {
+  read_cache | sed -E 's/=.*//' || die "本机没有缓存，先执行 sec sync"
+}
+
+case "${1:-}" in
+  sync) shift; cmd_sync "$@" ;;
+  set)  shift; cmd_set "$@" ;;
+  run)  shift; cmd_run "$@" ;;
+  list) cmd_list ;;
+  *)    sed -n '2,/^set -euo/p' "$0" | sed -e '$d' -e 's/^# \{0,1\}//'; exit 1 ;;
+esac

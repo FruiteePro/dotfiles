@@ -63,24 +63,15 @@ link zsh/.zimrc             .zimrc
 link zsh/.zsh/proxy.zsh     .zsh/proxy.zsh
 link zsh/.zsh/fzf.zsh       .zsh/fzf.zsh
 link zsh/.zsh/fzf           .zsh/fzf
+link zsh/.zsh/bws-secrets.zsh .zsh/bws-secrets.zsh
+link bin/sec                .local/bin/sec
 link config/ghostty/config  .config/ghostty/config
 link pi/settings.json            .pi/agent/settings.json
 link pi/settings-extensions.json .pi/agent/settings-extensions.json
 link pi/AGENTS.md                .pi/agent/AGENTS.md
 link pi/prompts/commit.md        .pi/agent/prompts/commit.md
 
-# 首次安装时生成密钥文件骨架，已存在则不动
-SECRETS="$HOME/.zsh/secrets.zsh"
-if [[ ! -e "$SECRETS" ]]; then
-  if (( DRY_RUN )); then
-    echo "将创建 .zsh/secrets.zsh (从 example 复制)"
-  else
-    mkdir -p "$(dirname "$SECRETS")"
-    cp "$DOTFILES/zsh/.zsh/secrets.zsh.example" "$SECRETS"
-    chmod 600 "$SECRETS"
-    echo "已创建 .zsh/secrets.zsh，请填入真实值"
-  fi
-fi
+# 密钥改由 Bitwarden Secrets Manager 同步（见 bin/sec），不再生成 secrets.zsh 骨架
 
 # =====================================================
 # 依赖安装
@@ -98,6 +89,44 @@ dep_command() {
     ripgrep) echo rg ;;
     *)       echo "$1" ;;
   esac
+}
+
+# bws（Bitwarden Secrets Manager CLI）不在 Homebrew，从官方 release 下载。
+# 版本和 sha256 写死，升级时同时改两处：
+# https://github.com/bitwarden/sdk-sm/releases 的 bws-sha256-checksums-<版本>.txt
+BWS_VERSION=2.1.0
+BWS_SHA256=286159545c7c834d93785c5a86e91d51026a5cc9858713936f391beb1ead2524   # bws-macos-universal
+
+install_bws() {
+  local current
+  current=$(bws --version 2>/dev/null | awk '{print $2}') || true
+  if [[ "$current" == "$BWS_VERSION" ]]; then
+    echo "bws 已是 $BWS_VERSION"
+    return
+  fi
+  if [[ "$(uname -s)" != Darwin ]]; then
+    echo "非 macOS，跳过 bws 自动安装"
+    return
+  fi
+  if (( DRY_RUN )); then
+    echo "将安装 bws $BWS_VERSION 到 ~/.local/bin"
+    return
+  fi
+
+  local zip="bws-macos-universal-$BWS_VERSION.zip" tmp
+  tmp=$(mktemp -d)
+  echo "安装 bws $BWS_VERSION"
+  curl -fsSL -o "$tmp/$zip" "https://github.com/bitwarden/sdk-sm/releases/download/bws-v$BWS_VERSION/$zip"
+  if ! echo "$BWS_SHA256  $tmp/$zip" | shasum -a 256 -c - >/dev/null; then
+    rm -rf "$tmp"
+    echo "bws 校验失败，未安装" >&2
+    return 1
+  fi
+  unzip -oq "$tmp/$zip" -d "$tmp"
+  mkdir -p "$HOME/.local/bin"
+  install -m 755 "$tmp/bws" "$HOME/.local/bin/bws"
+  rm -rf "$tmp"
+  echo "已安装 $("$HOME/.local/bin/bws" --version)"
 }
 
 install_deps() {
@@ -130,10 +159,21 @@ if (( SKIP_DEPS )); then
   echo "已跳过依赖安装 (--no-deps)"
 else
   install_deps
+  install_bws
 fi
 
 echo
 echo "完成。新开一个 shell 生效。"
+
+# 新机器还没配 bws token 时，提示密钥初始化步骤
+if ! security find-generic-password -a "$USER" -s bws-access-token >/dev/null 2>&1; then
+  echo
+  echo "密钥未初始化（Bitwarden Secrets Manager）："
+  echo "  1. 在 https://vault.bitwarden.com 的 Secrets Manager 里给这台机器建 machine account，"
+  echo "     授权 shell-secrets 项目（Can read, write），生成 access token"
+  echo "  2. security add-generic-password -U -a \"\$USER\" -s bws-access-token -w   # 粘贴 token"
+  echo "  3. sec sync"
+fi
 
 # 从 autojump 迁过来的机器，提示导入历史数据后再卸载
 if command -v autojump >/dev/null 2>&1; then

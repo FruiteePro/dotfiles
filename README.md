@@ -16,7 +16,7 @@ cd ~/dotfiles
 
 已存在的普通文件会备份成 `<目标>.bak.<时间戳>`，不会被直接覆盖。
 
-装完把密钥填进 `~/.zsh/secrets.zsh`（首次运行 `install.sh` 会从 example 生成）。
+装完按 `install.sh` 末尾的提示初始化密钥，详见下面「密钥」一节。
 
 ## 内容
 
@@ -27,6 +27,8 @@ cd ~/dotfiles
 | `zsh/.zsh/proxy.zsh` | `~/.zsh/proxy.zsh` | 代理开关函数 |
 | `zsh/.zsh/fzf.zsh` | `~/.zsh/fzf.zsh` | fzf 集成与预览配置 |
 | `zsh/.zsh/fzf/` | `~/.zsh/fzf/` | 自定义 fzf 命令（autoload） |
+| `zsh/.zsh/bws-secrets.zsh` | `~/.zsh/bws-secrets.zsh` | 启动加载密钥 + `secset` / `secsync` 等快捷命令 |
+| `bin/sec` | `~/.local/bin/sec` | 密钥管理命令（同步、更新、给 agent 注入） |
 | `config/ghostty/config` | `~/.config/ghostty/config` | Ghostty 终端 |
 | `pi/settings.json` | `~/.pi/agent/settings.json` | pi coding agent 主配置 |
 | `pi/settings-extensions.json` | `~/.pi/agent/settings-extensions.json` | pi 扩展配置（powerbar 等） |
@@ -98,14 +100,44 @@ Node 由 nvm 管理，`.zshrc` 里加载 `nvm.sh`，版本取 `nvm alias default
 
 ## 密钥
 
-所有 token 放 `~/.zsh/secrets.zsh`，该文件不进仓库。仓库里只有
-`zsh/.zsh/secrets.zsh.example` 作为变量名清单。
+密钥存在 Bitwarden Secrets Manager（免费组织，项目 `shell-secrets`），多台机器共用一份。
+仓库里只有脚本，不含任何值。
 
-`.zshrc` 末尾通过下面这行加载：
-
-```zsh
-[[ -f ~/.zsh/secrets.zsh ]] && source ~/.zsh/secrets.zsh
 ```
+Bitwarden 云端（端到端加密）
+   │  sec sync / sec set（联网）
+   ▼
+本机钥匙串缓存 bws-env-cache
+   │  shell 启动 / sec run（不联网，约 20ms）
+   ▼
+环境变量
+```
+
+日常用法：
+
+| 场景 | 命令 |
+|---|---|
+| 新增或更新一个变量 | `secset NAME`（交互输入不回显），或 `pbpaste \| secset NAME` |
+| 别的机器或网页改过 | `secsync` |
+| 删除 | 网页上删，再 `secsync` |
+| 查看有哪些变量 | `seclist`（只列名字） |
+| agent / 脚本用密钥 | `sec run -- python3 xxx.py`，bash 也能用，不依赖 `.zshrc` |
+
+`secset` / `secsync` 会刷新当前 shell，其他已开的终端要新开或 `exec zsh`。
+不要直接改钥匙串里的 `bws-env-cache`，下次 `sec sync` 会被云端覆盖。
+
+新机器：
+
+1. `./install.sh`，会建链并安装 `bws`（版本和 sha256 写在 `install.sh` 里）
+2. 在 https://vault.bitwarden.com → Secrets Manager 给这台机器单独建 machine account，
+   授权 `shell-secrets` 项目（Can read, write），生成 access token
+3. `security add-generic-password -U -a "$USER" -s bws-access-token -w`，粘贴 token
+4. `sec sync`
+
+机器丢失时，在网页上吊销那台机器的 machine account 即可，不影响其他机器。
+
+`~/.zsh/secrets.zsh` 仍会被 `.zshrc` 加载，只作本机过渡用；同名变量以钥匙串缓存为准。
+`zsh/.zsh/secrets.zsh.example` 保留为变量名和用途清单。
 
 ## 依赖
 

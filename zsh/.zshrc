@@ -116,9 +116,11 @@ export JFROG_CLI_PLUGINS_REPO=jfrog-cli-plugins
 
 export HEXDUMP_PATH=$(command -v hexdump)
 
-# 密钥与 token 统一放在 ~/.zsh/secrets.zsh（不进仓库）
-# 新机器：cp ~/.zsh/secrets.zsh.example ~/.zsh/secrets.zsh 后填值
+# 密钥：Bitwarden Secrets Manager 多机同步，本机钥匙串缓存，启动只读缓存不联网
+# 用法和新机器步骤见 ~/.zsh/bws-secrets.zsh 和 ~/.local/bin/sec
+# 旧的 ~/.zsh/secrets.zsh 只作本机过渡/兜底，先加载，同名变量会被缓存覆盖
 [[ -f ~/.zsh/secrets.zsh ]] && source ~/.zsh/secrets.zsh
+[[ -f ~/.zsh/bws-secrets.zsh ]] && source ~/.zsh/bws-secrets.zsh
 
 # 代理配置
 [[ -f ~/.zsh/proxy.zsh ]] && source ~/.zsh/proxy.zsh
