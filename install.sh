@@ -66,6 +66,7 @@ link zsh/.zsh/fzf           .zsh/fzf
 link zsh/.zsh/bws-secrets.zsh .zsh/bws-secrets.zsh
 link bin/sec                .local/bin/sec
 link config/ghostty/config  .config/ghostty/config
+link config/herdr/config.toml .config/herdr/config.toml
 link pi/settings.json            .pi/agent/settings.json
 link pi/settings-extensions.json .pi/agent/settings-extensions.json
 link pi/AGENTS.md                .pi/agent/AGENTS.md

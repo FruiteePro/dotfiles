@@ -30,6 +30,7 @@ cd ~/dotfiles
 | `zsh/.zsh/bws-secrets.zsh` | `~/.zsh/bws-secrets.zsh` | 启动加载密钥 + `secset` / `secsync` 等快捷命令 |
 | `bin/sec` | `~/.local/bin/sec` | 密钥管理命令（同步、更新、给 agent 注入） |
 | `config/ghostty/config` | `~/.config/ghostty/config` | Ghostty 终端 |
+| `config/herdr/config.toml` | `~/.config/herdr/config.toml` | herdr 终端复用器（只放配置，socket / 会话快照等运行时文件不入库） |
 | `pi/settings.json` | `~/.pi/agent/settings.json` | pi coding agent 主配置 |
 | `pi/settings-extensions.json` | `~/.pi/agent/settings-extensions.json` | pi 扩展配置（powerbar 等） |
 | `pi/AGENTS.md` | `~/.pi/agent/AGENTS.md` | pi 全局指令 |
@@ -146,6 +147,8 @@ Bitwarden 云端（端到端加密）
 - 需自行安装（有别名指向它们，但不纳入自动安装）：kubectl、podman、lazygit
 - [nvm](https://github.com/nvm-sh/nvm) — Node 版本管理，需 default 指向 22+
 - [Ghostty](https://ghostty.org/)
+- [herdr](https://herdr.dev/) — 自行安装到 `~/.local/bin`。各 agent 的集成文件
+  （如 `~/.pi/agent/extensions/herdr-agent-state.ts`）由 herdr 生成，不入库，新机器用 `herdr integration install` 重装
 - [pi](https://pi.dev/) — `settings.json` 里引用的 npm 包会自动安装
 
 不纳管的部分：pi 的 `models*.json`、`auth.json`、`sessions/` 等本机状态，

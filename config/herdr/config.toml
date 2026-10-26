@@ -1,0 +1,18 @@
+onboarding = false
+
+[keys]
+# Keep prefix bindings and add direct ctrl+option chords for pane focus
+focus_pane_left  = ["prefix+h", "ctrl+alt+h"]
+focus_pane_down  = ["prefix+j", "ctrl+alt+j"]
+focus_pane_up    = ["prefix+k", "ctrl+alt+k"]
+focus_pane_right = ["prefix+l", "ctrl+alt+l"]
+
+[ui.toast]
+# Ask the outer terminal (iTerm2) to show a desktop notification; "system" goes
+# through osascript/Script Editor, whose notification permission is denied on this Mac
+delivery = "terminal"
+
+[experimental]
+# Temporarily switch to an ASCII input source in prefix mode so prefix commands
+# work while a Chinese IME is active
+switch_ascii_input_source_in_prefix = true
