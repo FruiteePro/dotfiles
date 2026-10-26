@@ -1,9 +1,0 @@
-{
-	"powerbar": {
-		"right": "model,provider,sub-hourly,sub-weekly",
-		"separator": " | ",
-		"bar-style": "continuous",
-		"bar-width": "10",
-		"placement": "belowEditor"
-	}
-}

@@ -32,7 +32,6 @@ cd ~/dotfiles
 | `config/ghostty/config` | `~/.config/ghostty/config` | Ghostty 终端 |
 | `config/herdr/config.toml` | `~/.config/herdr/config.toml` | herdr 终端复用器（只放配置，socket / 会话快照等运行时文件不入库） |
 | `pi/settings.json` | `~/.pi/agent/settings.json` | pi coding agent 主配置 |
-| `pi/settings-extensions.json` | `~/.pi/agent/settings-extensions.json` | pi 扩展配置（powerbar 等） |
 | `pi/AGENTS.md` | `~/.pi/agent/AGENTS.md` | pi 全局指令 |
 | `pi/prompts/commit.md` | `~/.pi/agent/prompts/commit.md` | pi `/commit` 提示词 |
 
