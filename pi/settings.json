@@ -5,6 +5,10 @@
   "defaultThinkingLevel": "high",
   "externalEditor": "vim",
   "theme": "dark",
+  "tuiMode": "regular",
+  "terminal": {
+    "clearOnShrink": true
+  },
   "packages": [
     "npm:@capyup/pi-auto-compact",
     "npm:pi-hashline-edit-pro",
@@ -23,5 +27,6 @@
   "skills": [
     "~/.codex/skills"
   ],
-  "lastChangelogVersion": "1.2.0"
+  "lastChangelogVersion": "1.4.0",
+  "showCacheMissNotices": true
 }
