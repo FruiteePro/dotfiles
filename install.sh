@@ -70,6 +70,7 @@ link config/herdr/config.toml .config/herdr/config.toml
 link pi/settings.json            .pi/agent/settings.json
 link pi/AGENTS.md                .pi/agent/AGENTS.md
 link pi/prompts/commit.md        .pi/agent/prompts/commit.md
+link pi/extensions/herdr-env.ts  .pi/agent/extensions/herdr-env.ts
 
 # 密钥改由 Bitwarden Secrets Manager 同步（见 bin/sec），不再生成 secrets.zsh 骨架
 
