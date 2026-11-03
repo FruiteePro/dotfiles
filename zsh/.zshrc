@@ -165,3 +165,6 @@ export PATH="$HOME/.ada-cli/bin:$PATH"
 
 # Bun 全局包
 export PATH="$HOME/.bun/bin:$PATH"
+
+# Multica CLI
+export PATH="$HOME/.multica/bin:$PATH"
