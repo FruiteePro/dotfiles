@@ -67,6 +67,7 @@ link zsh/.zsh/bws-secrets.zsh .zsh/bws-secrets.zsh
 link bin/sec                .local/bin/sec
 link config/ghostty/config  .config/ghostty/config
 link config/herdr/config.toml .config/herdr/config.toml
+link config/herdr-app/themes .config/herdr-app/themes
 link pi/settings.json            .pi/agent/settings.json
 link pi/AGENTS.md                .pi/agent/AGENTS.md
 link pi/prompts/commit.md        .pi/agent/prompts/commit.md
